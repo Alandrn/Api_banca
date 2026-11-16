@@ -1,0 +1,2669 @@
+{
+  "info": {
+    "name": "API Banco Demo",
+    "description": "Colección de la API Banco Demo (datos ficticios, proyecto académico). Ejecute 'Flujo hipoteca completo' en orden con el Runner. Los requests de login guardan el token en {{token}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "solicitudId",
+      "value": "1"
+    },
+    {
+      "key": "avaluoId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Flujo hipoteca completo",
+      "item": [
+        {
+          "name": "01 Login cliente11",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesión y guarda el token en {{token}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"cliente11@demo-banco.test\",\n  \"password\": \"Demo1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.ok && j.data && j.data.accessToken) {",
+                  "  pm.collectionVariables.set('token', j.data.accessToken);",
+                  "  console.log('Token guardado para', j.data.usuario.email);",
+                  "}",
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 Crear solicitud de hipoteca",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": 4,\n  \"montoSolicitado\": 1800000,\n  \"plazoMeses\": 240,\n  \"valorInmueble\": 2500000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.ok) { pm.collectionVariables.set('solicitudId', j.data.id); }",
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 Datos del solicitante",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/solicitante",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "solicitante"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fechaNacimiento\": \"1990-04-15\",\n  \"curpFicticia\": \"DEMO900415HDFXXX01\",\n  \"estadoCivil\": \"casado\",\n  \"dependientes\": 2,\n  \"domicilio\": \"Av. Demo 123, Col. Centro\",\n  \"ciudad\": \"Ciudad de México\",\n  \"empresa\": \"Empresa Demo SA de CV\",\n  \"puesto\": \"Ingeniero de software\",\n  \"tipoEmpleo\": \"asalariado\",\n  \"antiguedadMeses\": 48,\n  \"ingresoMensual\": 65000,\n  \"otrosIngresos\": 5000,\n  \"gastosMensuales\": 20000,\n  \"deudasMensuales\": 3000,\n  \"referencias\": [\n    {\n      \"nombre\": \"María Gómez\",\n      \"telefono\": \"5511112222\",\n      \"relacion\": \"hermana\"\n    },\n    {\n      \"nombre\": \"Pedro Ruiz\",\n      \"telefono\": \"5533334444\",\n      \"relacion\": \"amigo\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 Documento identificacion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/documentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "documentos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"identificacion\",\n  \"nombreArchivoSimulado\": \"identificacion_demo.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 Documento comprobante_domicilio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/documentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "documentos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"comprobante_domicilio\",\n  \"nombreArchivoSimulado\": \"comprobante_domicilio_demo.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 Documento comprobante_ingresos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/documentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "documentos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"comprobante_ingresos\",\n  \"nombreArchivoSimulado\": \"comprobante_ingresos_demo.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 Documento estados_cuenta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/documentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "documentos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"estados_cuenta\",\n  \"nombreArchivoSimulado\": \"estados_cuenta_demo.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08 Documento escrituras",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/documentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "documentos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"escrituras\",\n  \"nombreArchivoSimulado\": \"escrituras_demo.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09 Documento predial",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/documentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "documentos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"predial\",\n  \"nombreArchivoSimulado\": \"predial_demo.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10 Registrar inmueble (avanza a datos_completos)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/inmueble",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "inmueble"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"casa\",\n  \"direccion\": \"Calle Demo 45\",\n  \"colonia\": \"Del Valle\",\n  \"ciudad\": \"Ciudad de México\",\n  \"estado\": \"Ciudad de México\",\n  \"cp\": \"03100\",\n  \"m2Terreno\": 160,\n  \"m2Construccion\": 140,\n  \"antiguedadAnios\": 8,\n  \"recamaras\": 3,\n  \"banos\": 2,\n  \"valorEstimadoCliente\": 2500000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11 Solicitar avalúo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/avaluo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "avaluo"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.ok) { pm.collectionVariables.set('avaluoId', j.data.id); }",
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "12 Ejecutar análisis",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/analisis",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "analisis"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13 Consultar oferta",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/oferta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "oferta"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "14 Aceptar oferta",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/oferta/aceptar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "oferta",
+                "aceptar"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "15 Formalizar",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/formalizar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "formalizar"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "16 Tabla de amortización",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/amortizacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "amortizacion"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "17 Historial de estados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/historial",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "historial"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Requests en orden: login → solicitud → datos → documentos → inmueble → avalúo → análisis → oferta → aceptar → formalizar."
+    },
+    {
+      "name": "Sistema",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login cliente11",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesión y guarda el token en {{token}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"cliente11@demo-banco.test\",\n  \"password\": \"Demo1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.ok && j.data && j.data.accessToken) {",
+                  "  pm.collectionVariables.set('token', j.data.accessToken);",
+                  "  console.log('Token guardado para', j.data.usuario.email);",
+                  "}",
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login analista1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesión y guarda el token en {{token}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"analista1@demo-banco.test\",\n  \"password\": \"Demo1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.ok && j.data && j.data.accessToken) {",
+                  "  pm.collectionVariables.set('token', j.data.accessToken);",
+                  "  console.log('Token guardado para', j.data.usuario.email);",
+                  "}",
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login valuador1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesión y guarda el token en {{token}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"valuador1@demo-banco.test\",\n  \"password\": \"Demo1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.ok && j.data && j.data.accessToken) {",
+                  "  pm.collectionVariables.set('token', j.data.accessToken);",
+                  "  console.log('Token guardado para', j.data.usuario.email);",
+                  "}",
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesión y guarda el token en {{token}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@demo-banco.test\",\n  \"password\": \"Demo1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.ok && j.data && j.data.accessToken) {",
+                  "  pm.collectionVariables.set('token', j.data.accessToken);",
+                  "  console.log('Token guardado para', j.data.usuario.email);",
+                  "}",
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Usuario actual",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Registro de cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/registro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "registro"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Laura\",\n  \"apellidos\": \"Martínez Ruiz\",\n  \"email\": \"laura.{{$timestamp}}@demo-banco.test\",\n  \"password\": \"Segura2026\",\n  \"telefono\": \"5511223344\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ver perfil",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "perfil"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar perfil",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "perfil"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"5599887766\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambiar contraseña",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/perfil/password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "perfil",
+                "password"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passwordActual\": \"Demo1234!\",\n  \"passwordNueva\": \"NuevaClave2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/usuarios?rol=cliente&page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios"
+              ],
+              "query": [
+                {
+                  "key": "rol",
+                  "value": "cliente"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Detalle de usuario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/usuarios/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios",
+                "1"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear valuador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Jorge\",\n  \"apellidos\": \"Valdez Soto\",\n  \"email\": \"valuador.{{$timestamp}}@demo-banco.test\",\n  \"password\": \"Valuador2026\",\n  \"rol\": \"valuador\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Desactivar usuario",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/usuarios/20/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios",
+                "20",
+                "estado"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estadísticas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/estadisticas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "estadisticas"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "Catálogo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/productos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "productos"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Hipotecas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/productos?tipo=hipoteca",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "productos"
+              ],
+              "query": [
+                {
+                  "key": "tipo",
+                  "value": "hipoteca"
+                }
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Detalle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/productos/4",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "productos",
+                "4"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Requisitos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/productos/4/requisitos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "productos",
+                "4",
+                "requisitos"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/productos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "productos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Préstamo Auto Demo {{$timestamp}}\",\n  \"tipo\": \"prestamo\",\n  \"descripcion\": \"Préstamo demostrativo para auto.\",\n  \"tasaAnual\": 16.9,\n  \"montoMin\": 30000,\n  \"montoMax\": 400000,\n  \"plazosMeses\": [\n    12,\n    24,\n    36,\n    48\n  ],\n  \"documentosRequeridos\": [\n    \"identificacion\",\n    \"comprobante_ingresos\"\n  ],\n  \"requisitos\": [\n    \"Ser mayor de edad\"\n  ],\n  \"condiciones\": \"Producto demostrativo.\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reemplazar (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/productos/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "productos",
+                "1"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Préstamo Personal Demo Básico\",\n  \"tipo\": \"prestamo\",\n  \"descripcion\": \"Préstamo personal demostrativo.\",\n  \"tasaAnual\": 24,\n  \"montoMin\": 10000,\n  \"montoMax\": 100000,\n  \"plazosMeses\": [\n    12,\n    24,\n    36\n  ],\n  \"documentosRequeridos\": [\n    \"identificacion\",\n    \"comprobante_domicilio\",\n    \"comprobante_ingresos\",\n    \"estados_cuenta\"\n  ],\n  \"requisitos\": [\n    \"Ser mayor de 18 años\"\n  ],\n  \"condiciones\": \"Tasa fija. Producto demostrativo.\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Desactivar (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/productos/7",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "productos",
+                "7"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Simuladores",
+      "item": [
+        {
+          "name": "Préstamo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/simuladores/prestamo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "simuladores",
+                "prestamo"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"monto\": 50000,\n  \"tasaAnual\": 18.5,\n  \"plazoMeses\": 24\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Hipoteca",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/simuladores/hipoteca",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "simuladores",
+                "hipoteca"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valorInmueble\": 2500000,\n  \"enganche\": 700000,\n  \"productoId\": 4,\n  \"plazoMeses\": 240\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Amortización",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/simuladores/amortizacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "simuladores",
+                "amortizacion"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"monto\": 50000,\n  \"tasaAnual\": 18.5,\n  \"plazoMeses\": 12\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Solicitudes",
+      "item": [
+        {
+          "name": "Crear préstamo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": 2,\n  \"montoSolicitado\": 80000,\n  \"plazoMeses\": 24\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.ok) { pm.collectionVariables.set('solicitudId', j.data.id); }",
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Detalle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Historial",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/historial",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "historial"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancelar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/cancelar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "cancelar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Ya no lo necesito\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ejecutar análisis",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/analisis",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "analisis"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sobrescribir resolución (analista)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/resolucion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "resolucion"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"aprobada\",\n  \"monto\": 70000,\n  \"tasa\": 17.5,\n  \"plazo\": 24,\n  \"motivo\": \"Revisión manual favorable\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Oferta",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/oferta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "oferta"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Aceptar oferta",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/oferta/aceptar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "oferta",
+                "aceptar"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar oferta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/oferta/rechazar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "oferta",
+                "rechazar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Tasa alta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Formalizar",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/formalizar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "formalizar"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Amortización",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/amortizacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "amortizacion"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Expediente",
+      "item": [
+        {
+          "name": "Guardar solicitante",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/solicitante",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "solicitante"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fechaNacimiento\": \"1990-04-15\",\n  \"curpFicticia\": \"DEMO900415HDFXXX01\",\n  \"estadoCivil\": \"casado\",\n  \"dependientes\": 2,\n  \"domicilio\": \"Av. Demo 123, Col. Centro\",\n  \"ciudad\": \"Ciudad de México\",\n  \"empresa\": \"Empresa Demo SA de CV\",\n  \"puesto\": \"Ingeniero de software\",\n  \"tipoEmpleo\": \"asalariado\",\n  \"antiguedadMeses\": 48,\n  \"ingresoMensual\": 65000,\n  \"otrosIngresos\": 5000,\n  \"gastosMensuales\": 20000,\n  \"deudasMensuales\": 3000,\n  \"referencias\": [\n    {\n      \"nombre\": \"María Gómez\",\n      \"telefono\": \"5511112222\",\n      \"relacion\": \"hermana\"\n    },\n    {\n      \"nombre\": \"Pedro Ruiz\",\n      \"telefono\": \"5533334444\",\n      \"relacion\": \"amigo\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ver solicitante",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/solicitante",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "solicitante"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Documentos y estado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/documentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "documentos"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Entregar documento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/documentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "documentos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"identificacion\",\n  \"nombreArchivoSimulado\": \"ine_demo.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validar documento (analista)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/documentos/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "documentos",
+                "1"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"validado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Evaluación inmueble",
+      "item": [
+        {
+          "name": "Registrar inmueble",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/inmueble",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "inmueble"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"casa\",\n  \"direccion\": \"Calle Demo 45\",\n  \"colonia\": \"Del Valle\",\n  \"ciudad\": \"Ciudad de México\",\n  \"estado\": \"Ciudad de México\",\n  \"cp\": \"03100\",\n  \"m2Terreno\": 160,\n  \"m2Construccion\": 140,\n  \"antiguedadAnios\": 8,\n  \"recamaras\": 3,\n  \"banos\": 2,\n  \"valorEstimadoCliente\": 2500000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ver inmueble",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/inmueble",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "inmueble"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Solicitar avalúo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/{{solicitudId}}/avaluo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "{{solicitudId}}",
+                "avaluo"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.ok) { pm.collectionVariables.set('avaluoId', j.data.id); }",
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar avalúos (valuador/analista)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/avaluos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "avaluos"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Detalle avalúo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/avaluos/{{avaluoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "avaluos",
+                "{{avaluoId}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ajustar resultado (valuador)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/avaluos/{{avaluoId}}/resultado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "avaluos",
+                "{{avaluoId}}",
+                "resultado"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valorComercial\": 2380000,\n  \"estadoConservacion\": \"bueno\",\n  \"observaciones\": \"Ajuste tras visita.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cuentas",
+      "item": [
+        {
+          "name": "Mis cuentas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cuentas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cuentas"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Detalle de cuenta",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cuentas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cuentas",
+                "1"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Movimientos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cuentas/1/movimientos?page=1&limit=10&tipo=compra",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cuentas",
+                "1",
+                "movimientos"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "tipo",
+                  "value": "compra"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Respuesta con formato estándar', () => { pm.expect(pm.response.json()).to.have.property('demo', true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
